@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		245637CE1A4C7DDE007C0798 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 245637CD1A4C7DDE007C0798 /* main.m */; };
+		245637D61A4C7EEA007C0798 /* Pair.m in Sources */ = {isa = PBXBuildFile; fileRef = 245637D51A4C7EEA007C0798 /* Pair.m */; };
+		245637D81A4C80F1007C0798 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 245637D71A4C80F1007C0798 /* Quartz.framework */; };
+		245637DB1A4CBD04007C0798 /* Tokenizer.m in Sources */ = {isa = PBXBuildFile; fileRef = 245637DA1A4CBD04007C0798 /* Tokenizer.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +28,11 @@
 /* Begin PBXFileReference section */
 		245637CA1A4C7DDE007C0798 /* Lispify */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Lispify; sourceTree = BUILT_PRODUCTS_DIR; };
 		245637CD1A4C7DDE007C0798 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		245637D41A4C7EEA007C0798 /* Pair.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pair.h; sourceTree = "<group>"; };
+		245637D51A4C7EEA007C0798 /* Pair.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Pair.m; sourceTree = "<group>"; };
+		245637D71A4C80F1007C0798 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
+		245637D91A4CBD04007C0798 /* Tokenizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tokenizer.h; sourceTree = "<group>"; };
+		245637DA1A4CBD04007C0798 /* Tokenizer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Tokenizer.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				245637D81A4C80F1007C0798 /* Quartz.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -41,6 +50,7 @@
 		245637C11A4C7DDE007C0798 = {
 			isa = PBXGroup;
 			children = (
+				245637D71A4C80F1007C0798 /* Quartz.framework */,
 				245637CC1A4C7DDE007C0798 /* Lispify */,
 				245637CB1A4C7DDE007C0798 /* Products */,
 			);
@@ -57,7 +67,11 @@
 		245637CC1A4C7DDE007C0798 /* Lispify */ = {
 			isa = PBXGroup;
 			children = (
+				245637D41A4C7EEA007C0798 /* Pair.h */,
+				245637D51A4C7EEA007C0798 /* Pair.m */,
 				245637CD1A4C7DDE007C0798 /* main.m */,
+				245637D91A4CBD04007C0798 /* Tokenizer.h */,
+				245637DA1A4CBD04007C0798 /* Tokenizer.m */,
 			);
 			path = Lispify;
 			sourceTree = "<group>";
@@ -118,7 +132,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				245637DB1A4CBD04007C0798 /* Tokenizer.m in Sources */,
 				245637CE1A4C7DDE007C0798 /* main.m in Sources */,
+				245637D61A4C7EEA007C0798 /* Pair.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
