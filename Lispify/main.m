@@ -38,7 +38,7 @@ static Pair *parse(NSString *source) {
         [tokenizer next];
         return parsePair(tokenizer);
     }
-    NSLog(@"no pair");
+    NSLog(@"no pair starting with '%c'", [tokenizer current]);
     return nil;
 }
 
@@ -94,9 +94,11 @@ static size_t consumer_put(void *info, const void *buffer, size_t count) {
     return count;
 }
 
+static NSString *outPath = nil;
+
 static void consumer_release(void *info) {
     NSMutableData *data = (__bridge NSMutableData *)(info);
-    [data writeToFile: [@"~/Desktop/out.pdf" stringByExpandingTildeInPath] atomically: YES];
+    [data writeToFile: outPath atomically: YES];
     NSLog(@"done consuming");
 }
 
@@ -108,6 +110,7 @@ static const CGFloat kBoxHeight = kRectWidth;
 static const CGFloat kSeparatorHeight = 100;
 
 static CTFontRef font = NULL;
+static NSColor *drawColor = nil;
 
 static void drawTextInRect(CGContextRef ctx, CGRect frame, id obj) {
     if (!obj) {
@@ -117,7 +120,7 @@ static void drawTextInRect(CGContextRef ctx, CGRect frame, id obj) {
         CGContextStrokePath(ctx);
     } else {
         NSString *value = [obj description];
-        NSAttributedString *attributedValue = [[NSAttributedString alloc] initWithString:value attributes:@{ (NSString *) kCTFontAttributeName: (__bridge NSFont *) font }];
+        NSAttributedString *attributedValue = [[NSAttributedString alloc] initWithString:value attributes:@{ (NSString *) kCTFontAttributeName: (__bridge NSFont *) font, (NSString *)kCTForegroundColorAttributeName: (__bridge id) drawColor.CGColor}];
         CTLineRef line = CTLineCreateWithAttributedString((CFAttributedStringRef) attributedValue);
         
         CGRect textFrame = CTLineGetBoundsWithOptions(line, 0);
@@ -185,8 +188,6 @@ static void drawPair(CGContextRef ctx, Pair *pair) {
     }
 }
 
-static NSColor *drawColor = nil;
-
 static void render(Pair *root) {
     data = [NSMutableData new];
     CGDataConsumerCallbacks callbacks = { consumer_put, consumer_release };
@@ -199,6 +200,7 @@ static void render(Pair *root) {
     
     font = CTFontCreateWithName(CFSTR("Helvetica"), 60, NULL);
     CGPDFContextBeginPage(ctx, NULL);
+    CGContextSetStrokeColorWithColor(ctx, drawColor.CGColor);
     drawPair(ctx, root);
     CGPDFContextEndPage(ctx);
     
@@ -213,6 +215,7 @@ int main(int argc, const char * argv[]) {
         if (argc < 2) { NSLog(@"wrong number of arguments: %@", @(argc - 1)); exit(EXIT_FAILURE); }
         
         drawColor = [NSColor blackColor];
+        outPath = [@"~/Desktop/out.pdf" stringByExpandingTildeInPath];
         
         NSMutableString *source = [NSMutableString new];
         
@@ -222,6 +225,10 @@ int main(int argc, const char * argv[]) {
             if (!noMoreArgs) {
                 if ([argument isEqualToString: @"--"]) { noMoreArgs = YES; continue; }
                 if ([argument isEqualToString: @"--color=white"]) { drawColor = [NSColor whiteColor]; continue; }
+                if ([argument hasPrefix: @"--out="]) {
+                    outPath = [[argument substringFromIndex: 6] stringByExpandingTildeInPath];
+                    continue;
+                }
             }
             if (source.length) { [source appendString: @" "]; }
             [source appendString: argument];
