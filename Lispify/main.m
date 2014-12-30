@@ -2,8 +2,6 @@
 @import Quartz;
 @import CoreText;
 
-#import <CoreText/CoreText.h>
-
 #import "Pair.h"
 #import "Tokenizer.h"
 
@@ -13,6 +11,13 @@ static Pair *parsePair(Tokenizer *tokenizer) {
     if ([tokenizer current] == ')') { [tokenizer next]; return nil; }
     id car;
     id cdr;
+    BOOL hidden = NO;
+    
+    if ([tokenizer current] == '~') {
+        hidden = YES;
+        [tokenizer next];
+    }
+    
     if ([tokenizer current] == '(') {
         [tokenizer next]; car = parsePair(tokenizer);
     } else {
@@ -24,7 +29,7 @@ static Pair *parsePair(Tokenizer *tokenizer) {
         car = [NSString stringWithString: value];
     }
     cdr = parsePair(tokenizer);
-    return [Pair pairWithCar: car cdr: cdr];
+    return [Pair pairWithCar: car cdr: cdr hidden: hidden];
 }
 
 static Pair *parse(NSString *source) {
@@ -129,44 +134,53 @@ static CGPoint offsetOfPair(Pair *pair) {
 static void drawPair(CGContextRef ctx, Pair *pair) {
     CGPoint offset = offsetOfPair(pair);
     CGRect rect = CGRectMake(offset.x, offset.y, kRectWidth - 1, kBoxHeight - 1);
-    CGContextSetLineWidth(ctx, kLineWidth);
-    CGContextStrokeRect(ctx, rect);
+    
+    if (!pair.hidden) {
+        CGContextSetLineWidth(ctx, kLineWidth);
+        CGContextStrokeRect(ctx, rect);
+    }
 
     if ([pair.car isKindOfClass: Pair.class]) {
-        CGFloat x = rect.origin.x + rect.size.width/2;
-        CGFloat y_from = rect.origin.y + rect.size.height/2;
-        CGFloat y_to = offsetOfPair(pair.car).y + kBoxHeight + kLineWidth;
-        CGContextStrokeEllipseInRect(ctx, CGRectMake(x - 10, y_from - 10, 20, 20));
-        CGContextMoveToPoint(ctx, x, y_from);
-        CGContextAddLineToPoint(ctx, x, y_to);
-        CGContextStrokePath(ctx);
-        CGContextMoveToPoint(ctx, x - 10, y_to + 20);
-        CGContextAddLineToPoint(ctx, x, y_to);
-        CGContextAddLineToPoint(ctx, x + 10, y_to + 20);
-        CGContextStrokePath(ctx);
+        if (!pair.hidden) {
+            CGFloat x = rect.origin.x + rect.size.width/2;
+            CGFloat y_from = rect.origin.y + rect.size.height/2;
+            CGFloat y_to = offsetOfPair(pair.car).y + kBoxHeight + kLineWidth;
+            CGContextStrokeEllipseInRect(ctx, CGRectMake(x - 10, y_from - 10, 20, 20));
+            CGContextMoveToPoint(ctx, x, y_from);
+            CGContextAddLineToPoint(ctx, x, y_to);
+            CGContextStrokePath(ctx);
+            CGContextMoveToPoint(ctx, x - 10, y_to + 20);
+            CGContextAddLineToPoint(ctx, x, y_to);
+            CGContextAddLineToPoint(ctx, x + 10, y_to + 20);
+            CGContextStrokePath(ctx);
+        }
         drawPair(ctx, pair.car);
-    } else {
+    } else if (!pair.hidden) {
         drawTextInRect(ctx, rect, pair.car);
     }
 
     rect.origin.x += rect.size.width;
-    CGContextSetLineWidth(ctx, kLineWidth);
-    CGContextStrokeRect(ctx, rect);
+    if (!pair.hidden) {
+        CGContextSetLineWidth(ctx, kLineWidth);
+        CGContextStrokeRect(ctx, rect);
+    }
     
     if ([pair.cdr isKindOfClass: Pair.class]) {
-        CGFloat x_from = offset.x + kRectWidth*3/2;
-        CGFloat x_to = offsetOfPair(pair.cdr).x - kLineWidth;
-        CGFloat y = offset.y + kBoxHeight/2;
-        CGContextStrokeEllipseInRect(ctx, CGRectMake(x_from - 10, y - 10, 20, 20));
-        CGContextMoveToPoint(ctx, x_from, y);
-        CGContextAddLineToPoint(ctx, x_to, y);
-        CGContextStrokePath(ctx);
-        CGContextMoveToPoint(ctx, x_to - 20, y - 10);
-        CGContextAddLineToPoint(ctx, x_to, y);
-        CGContextAddLineToPoint(ctx, x_to - 20, y + 10);
-        CGContextStrokePath(ctx);
+        if (!pair.hidden) {
+            CGFloat x_from = offset.x + kRectWidth*3/2;
+            CGFloat x_to = offsetOfPair(pair.cdr).x - kLineWidth;
+            CGFloat y = offset.y + kBoxHeight/2;
+            CGContextStrokeEllipseInRect(ctx, CGRectMake(x_from - 10, y - 10, 20, 20));
+            CGContextMoveToPoint(ctx, x_from, y);
+            CGContextAddLineToPoint(ctx, x_to, y);
+            CGContextStrokePath(ctx);
+            CGContextMoveToPoint(ctx, x_to - 20, y - 10);
+            CGContextAddLineToPoint(ctx, x_to, y);
+            CGContextAddLineToPoint(ctx, x_to - 20, y + 10);
+            CGContextStrokePath(ctx);
+        }
         drawPair(ctx, pair.cdr);
-    } else {
+    } else if (!pair.hidden) {
         drawTextInRect(ctx, rect, pair.cdr);
     }
 }

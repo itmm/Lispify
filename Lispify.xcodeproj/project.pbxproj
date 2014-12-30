@@ -69,9 +69,9 @@
 			children = (
 				245637D41A4C7EEA007C0798 /* Pair.h */,
 				245637D51A4C7EEA007C0798 /* Pair.m */,
-				245637CD1A4C7DDE007C0798 /* main.m */,
 				245637D91A4CBD04007C0798 /* Tokenizer.h */,
 				245637DA1A4CBD04007C0798 /* Tokenizer.m */,
+				245637CD1A4C7DDE007C0798 /* main.m */,
 			);
 			path = Lispify;
 			sourceTree = "<group>";
