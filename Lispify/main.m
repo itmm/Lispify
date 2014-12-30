@@ -91,7 +91,7 @@ static size_t consumer_put(void *info, const void *buffer, size_t count) {
 
 static void consumer_release(void *info) {
     NSMutableData *data = (__bridge NSMutableData *)(info);
-    [data writeToFile: @"/Users/timm/Desktop/out.pdf" atomically: YES];
+    [data writeToFile: [@"~/Desktop/out.pdf" stringByExpandingTildeInPath] atomically: YES];
     NSLog(@"done consuming");
 }
 
@@ -194,8 +194,8 @@ static void render(Pair *root) {
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-     //   if (argc != 2) { NSLog(@"wrong number of arguments: %@", @(argc - 1)); exit(EXIT_FAILURE); }
-        Pair *root = parse(@"(1 ((2 2')) (3 4))" /*[NSString stringWithUTF8String: argv[1]] */);
+        if (argc != 2) { NSLog(@"wrong number of arguments: %@", @(argc - 1)); exit(EXIT_FAILURE); }
+        Pair *root = parse([NSString stringWithUTF8String: argv[1]]);
         if (root) {
             distribute(root, nil);
             render(root);
