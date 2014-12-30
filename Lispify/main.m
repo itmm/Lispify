@@ -185,6 +185,8 @@ static void drawPair(CGContextRef ctx, Pair *pair) {
     }
 }
 
+static NSColor *drawColor = nil;
+
 static void render(Pair *root) {
     data = [NSMutableData new];
     CGDataConsumerCallbacks callbacks = { consumer_put, consumer_release };
@@ -208,8 +210,24 @@ static void render(Pair *root) {
 
 int main(int argc, const char * argv[]) {
     @autoreleasepool {
-        if (argc != 2) { NSLog(@"wrong number of arguments: %@", @(argc - 1)); exit(EXIT_FAILURE); }
-        Pair *root = parse([NSString stringWithUTF8String: argv[1]]);
+        if (argc < 2) { NSLog(@"wrong number of arguments: %@", @(argc - 1)); exit(EXIT_FAILURE); }
+        
+        drawColor = [NSColor blackColor];
+        
+        NSMutableString *source = [NSMutableString new];
+        
+        BOOL noMoreArgs = NO;
+        for (NSInteger i = 1; i < argc; ++i) {
+            NSString *argument = [NSString stringWithUTF8String: argv[i]];
+            if (!noMoreArgs) {
+                if ([argument isEqualToString: @"--"]) { noMoreArgs = YES; continue; }
+                if ([argument isEqualToString: @"--color=white"]) { drawColor = [NSColor whiteColor]; continue; }
+            }
+            if (source.length) { [source appendString: @" "]; }
+            [source appendString: argument];
+        }
+        
+        Pair *root = parse(source);
         if (root) {
             distribute(root, nil);
             render(root);
