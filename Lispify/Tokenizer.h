@@ -4,7 +4,7 @@
 
     + (instancetype) tokenizerWithString: (NSString *) source;
 
-    - (char) current;
-    - (char) next;
+    - (unsigned char) current;
+    - (unsigned char) next;
 
 @end

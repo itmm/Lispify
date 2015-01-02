@@ -5,8 +5,22 @@
 #import "Pair.h"
 #import "Tokenizer.h"
 
+static void eatSpaces(Tokenizer *tokenizer) {
+    while ([tokenizer current] != 0 && [tokenizer current] <= ' ') [tokenizer next];
+}
+
+static NSString *parseIdentifier(Tokenizer *tokenizer) {
+    NSMutableData *data = [NSMutableData new];
+    while ([tokenizer current] > ' ' && [tokenizer current] != ')' && [tokenizer current] != '.') {
+        unsigned char ch = [tokenizer current];
+        [data appendBytes: &ch length: 1];
+        [tokenizer next];
+    }
+    return [NSString stringWithUTF8String: data.bytes];
+}
+
 static Pair *parsePair(Tokenizer *tokenizer) {
-    if ([tokenizer current] != 0 && [tokenizer current] <= ' ') [tokenizer next];
+    eatSpaces(tokenizer);
     if ([tokenizer current] == 0) { NSLog(@"pair not closed"); return nil; }
     if ([tokenizer current] == ')') { [tokenizer next]; return nil; }
     id car;
@@ -16,19 +30,23 @@ static Pair *parsePair(Tokenizer *tokenizer) {
     if ([tokenizer current] == '~') {
         hidden = YES;
         [tokenizer next];
+        eatSpaces(tokenizer);
     }
     
     if ([tokenizer current] == '(') {
         [tokenizer next]; car = parsePair(tokenizer);
     } else {
-        NSMutableString *value = [NSMutableString new];
-        while ([tokenizer current] > ' ' && [tokenizer current] != ')') {
-            [value appendString: [NSString stringWithFormat: @"%c", [tokenizer current]]];
-            [tokenizer next];
-        }
-        car = [NSString stringWithString: value];
+        car = parseIdentifier(tokenizer);
     }
-    cdr = parsePair(tokenizer);
+
+    eatSpaces(tokenizer);
+    if ([tokenizer current] == '.') {
+        [tokenizer next];
+        eatSpaces(tokenizer);
+        cdr = parseIdentifier(tokenizer);
+    } else {
+        cdr = parsePair(tokenizer);
+    }
     return [Pair pairWithCar: car cdr: cdr hidden: hidden];
 }
 

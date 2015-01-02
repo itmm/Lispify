@@ -1,14 +1,14 @@
 #import "Tokenizer.h"
 
 @implementation Tokenizer {
-    NSString *_source;
+    NSData *_source;
     NSInteger _current;
     NSInteger _length;
 }
 
     - (instancetype) initWithString: (NSString *) source {
         if (self = [super init]) {
-            _source = source;
+            _source = [source dataUsingEncoding:NSUTF8StringEncoding];
             _current = 0;
             _length = _source.length;
         }
@@ -19,11 +19,11 @@
         return [[Tokenizer alloc] initWithString: source];
     }
 
-    - (char) current {
-        return _current >= _length ? 0 : [_source characterAtIndex: _current];
+    - (unsigned char) current {
+        return _current >= _length ? 0 : ((unsigned char *) _source.bytes)[_current];
     }
 
-    - (char) next {
+    - (unsigned char) next {
         ++_current;
         return [self current];
     }
